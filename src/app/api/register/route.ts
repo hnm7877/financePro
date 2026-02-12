@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { registerSchema } from "@/components/features/auth/schema";
-import dbConnect from "@/lib/mongodb";
+import { connectDB } from "@/lib/mongodb";
 import Company from "@/models/Company";
 
 export async function POST(request: Request) {
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
       );
     }
 
-    await dbConnect();
+    await connectDB();
 
     const { email } = validation.data;
 

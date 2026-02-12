@@ -45,9 +45,12 @@ export function Navbar() {
           </Link>
           <div className="h-4 w-[1px] bg-gray-300 dark:bg-gray-700"></div>
           <p className="text-sm text-gray-500">Déjà inscrit ?</p>
-          <button className="bg-primary/10 text-primary px-4 py-2 rounded-lg text-sm font-bold hover:bg-primary/20 transition-all">
+          <Link
+            href="/login"
+            className="bg-primary/10 text-primary px-4 py-2 rounded-lg text-sm font-bold hover:bg-primary/20 transition-all"
+          >
             Se connecter
-          </button>
+          </Link>
         </div>
       </div>
     </header>
