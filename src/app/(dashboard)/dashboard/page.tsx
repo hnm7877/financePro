@@ -7,8 +7,20 @@ import { CashflowChart } from "@/components/features/dashboard/CashflowChart";
 import { DividendsChart } from "@/components/features/dashboard/DividendsChart";
 import { useUserStore } from "@/store/useUserStore";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 export default function DashboardPage() {
   const { user } = useUserStore();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    }
+  }, [user, router]);
+
+  if (!user) return null;
 
   return (
     <div className="space-y-8">

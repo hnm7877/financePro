@@ -26,7 +26,9 @@ export function DashboardSidebar() {
           <span className="material-symbols-outlined block">account_balance</span>
         </div>
         <div>
-          <h1 className="text-lg font-bold leading-none">FinancePro</h1>
+          <h1 className="text-lg font-bold leading-none truncate w-32">
+            {user?.companyName || "FinancePro"}
+          </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Gestion d'associés
           </p>
@@ -80,11 +82,17 @@ export function DashboardSidebar() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-bold truncate">{user?.fullName || "Utilisateur"}</p>
-            <p className="text-xs text-slate-500 truncate">Admin Principal</p>
+            <p className="text-[10px] text-slate-500 truncate">{user?.country || "Non défini"}</p>
           </div>
-          <span className="material-symbols-outlined text-slate-400">more_vert</span>
+          <button 
+            onClick={() => useUserStore.getState().logout()}
+            className="material-symbols-outlined text-slate-400 hover:text-red-500 transition-colors"
+          >
+            logout
+          </button>
         </div>
       </div>
+
     </aside>
   );
 }
