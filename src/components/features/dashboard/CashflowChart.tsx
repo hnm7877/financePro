@@ -2,7 +2,7 @@ import { useInvoiceStore } from "@/store/useInvoiceStore";
 import { useEffect, useMemo, useState } from "react";
 
 export function CashflowChart() {
-  const { history, fetchInvoices } = useInvoiceStore();
+  const { history } = useInvoiceStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export function CashflowChart() {
       const monthlyRevenue = history
         .filter(inv => {
           const d = new Date(inv.date);
-          return d.getMonth() === monthKey && d.getFullYear() === yearKey && (inv.status === "Ventilé" || inv.status === "Payée"); // Assuming status
+          return d.getMonth() === monthKey && d.getFullYear() === yearKey && inv.status === "Ventilé";
         })
         .reduce((sum, inv) => sum + inv.amount, 0);
 
