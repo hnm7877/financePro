@@ -79,7 +79,7 @@ export function RecentInvoices() {
                     })}
                   </td>
                   <td className="px-6 py-4 text-sm font-bold text-right">
-                    {formatCurrency(invoice.amount, user?.country)}
+                    {formatCurrency(invoice.amount, user?.currency || user?.country)}
                   </td>
                 </tr>
               ))

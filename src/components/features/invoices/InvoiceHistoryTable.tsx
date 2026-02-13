@@ -53,7 +53,7 @@ export function InvoiceHistoryTable() {
                       {invoice.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm font-bold">{formatCurrency(invoice.amount, user?.country)}</td>
+                  <td className="px-6 py-4 text-sm font-bold">{formatCurrency(invoice.amount, user?.currency || user?.country)}</td>
                   <td className="px-6 py-4 text-right">
                     <button className="text-gray-400 hover:text-primary transition-colors">
                       <span className="material-symbols-outlined text-xl">visibility</span>

@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
 import { COUNTRIES } from "@/data/countries";
+import { formatCurrency } from "@/lib/utils/currency";
 
 interface Associate {
   _id: string;
@@ -35,8 +36,8 @@ const AVAILABLE_ROLES = ['Dirigeant', 'Associé', 'Gérant', 'Investisseur', 'Co
 export default function AssociatesPage() {
   const { user } = useUserStore();
   
-  // Derive user currency from country code, default to EUR
-  const userCurrency = COUNTRIES.find(c => c.code === user?.country)?.currency.code || "EUR";
+  // Derive user currency, default to EUR
+  const userCurrency = user?.currency || COUNTRIES.find(c => c.code === user?.country)?.currency.code || "EUR";
 
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -239,7 +240,7 @@ export default function AssociatesPage() {
               <TrendingUp size={20} />
               <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Dépenses Totales</span>
             </div>
-            <div className="text-3xl font-bold">{totalExpenses.toLocaleString('fr-FR', { style: 'currency', currency: userCurrency })}</div>
+            <div className="text-3xl font-bold">{formatCurrency(totalExpenses, userCurrency)}</div>
           </div>
 
           <div className="bg-[#0f172a] p-6 rounded-2xl border border-slate-800">
@@ -247,7 +248,7 @@ export default function AssociatesPage() {
               <Plus size={20} />
               <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Dividendes Dus</span>
             </div>
-            <div className="text-3xl font-bold">{(0).toLocaleString('fr-FR', { style: 'currency', currency: userCurrency })}</div>
+            <div className="text-3xl font-bold">{formatCurrency(0, userCurrency)}</div>
           </div>
         </div>
 
@@ -309,7 +310,7 @@ export default function AssociatesPage() {
                       <span className="text-sm font-bold">{(associate.share * 100).toFixed(0)}%</span>
                       <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-xs font-medium text-slate-300 w-fit">
                         <TrendingUp size={12} className="text-blue-500" />
-                        {(associate.totalExpenses || 0).toLocaleString('fr-FR', { style: 'currency', currency: userCurrency })}
+                        {formatCurrency(associate.totalExpenses || 0, userCurrency)}
                       </div>
                     </div>
                   </td>

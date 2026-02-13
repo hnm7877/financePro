@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useUserStore } from "@/store/useUserStore";
 import { useSidebarStore } from "@/store/useSidebarStore";
+import { useModalStore } from "@/store/useModalStore";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -128,7 +129,13 @@ export function DashboardSidebar() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold truncate">{mounted ? (user?.fullName || "Utilisateur") : "Utilisateur"}</p>
-              <p className="text-xs text-slate-500 truncate">{mounted ? (user?.country || "Non défini") : "Non défini"}</p>
+              <div 
+                className="flex items-center gap-1.5 cursor-pointer group"
+                onClick={() => useModalStore.getState().openPremiumModal()}
+              >
+                <div className="w-2 h-2 rounded-full bg-slate-400 group-hover:bg-amber-400 transition-colors"></div>
+                <p className="text-xs text-slate-500 group-hover:text-amber-500 transition-colors font-medium">Plan Basic</p>
+              </div>
             </div>
             <button 
               onClick={() => useUserStore.getState().logout()}

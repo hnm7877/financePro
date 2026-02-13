@@ -7,6 +7,9 @@ interface UserState {
   email: string;
   country: string;
   phoneNumber: string;
+  siret?: string;
+  address?: string;
+  currency?: string;
 }
 
 interface UserStore {

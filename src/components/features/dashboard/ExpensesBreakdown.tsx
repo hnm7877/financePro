@@ -46,7 +46,7 @@ export function ExpensesBreakdown() {
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-semibold">{expense.label}</span>
                   <span className="text-sm font-bold">
-                    {formatCurrency(expense.amount, user?.country)}
+                    {formatCurrency(expense.amount, user?.currency || user?.country)}
                   </span>
                 </div>
                 <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">

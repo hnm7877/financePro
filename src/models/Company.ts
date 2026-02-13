@@ -8,6 +8,9 @@ export interface Company extends mongoose.Document {
   email: string;
   country: string;
   phoneNumber: string;
+  siret?: string;
+  address?: string;
+  currency?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -50,6 +53,19 @@ const CompanySchema = new mongoose.Schema<Company>(
     phoneNumber: {
       type: String,
       required: [true, "Le numéro de téléphone est requis"],
+      trim: true,
+    },
+    siret: {
+      type: String,
+      trim: true,
+    },
+    address: {
+      type: String,
+      trim: true,
+    },
+    currency: {
+      type: String,
+      default: "EUR",
       trim: true,
     },
   },

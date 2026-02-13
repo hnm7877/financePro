@@ -95,7 +95,7 @@ export function ManualInvoiceForm() {
       </div>
       <div className="space-y-1.5">
         <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
-          Montant TTC ({user?.country === "FR" ? "€" : "FCFA"})
+          Montant TTC ({user?.currency || (user?.country === "FR" ? "EUR" : "XOF")})
         </label>
         <div className="relative">
           <input
@@ -105,7 +105,7 @@ export function ManualInvoiceForm() {
             step="0.01"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-primary font-bold pointer-events-none">
-            {user?.country === "FR" ? "EUR" : "XOF"}
+            {user?.currency || (user?.country === "FR" ? "EUR" : "XOF")}
           </div>
         </div>
         {errors.amount && (

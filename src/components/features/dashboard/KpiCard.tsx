@@ -38,7 +38,7 @@ export function KpiCard({
         </div>
       </div>
       <h3 className="text-2xl font-extrabold mb-1">
-        {formatCurrency(amount, user?.country)}
+        {formatCurrency(amount, user?.currency || user?.country)}
       </h3>
       <div className="flex items-center gap-1.5">
         {trend && (

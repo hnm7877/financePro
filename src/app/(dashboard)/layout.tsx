@@ -2,12 +2,16 @@
 
 import { DashboardSidebar } from "@/components/features/dashboard/DashboardSidebar";
 import { DashboardHeader } from "@/components/features/dashboard/DashboardHeader";
+import { PremiumModal } from "@/components/modals/PremiumModal";
+import { useModalStore } from "@/store/useModalStore";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { isPremiumModalOpen, closePremiumModal } = useModalStore();
+
   return (
     <div 
       className="flex h-screen overflow-hidden bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100"
@@ -23,6 +27,10 @@ export default function DashboardLayout({
           {children}
         </main>
       </div>
+      <PremiumModal 
+        isOpen={isPremiumModalOpen}
+        onClose={closePremiumModal}
+      />
     </div>
   );
 }

@@ -23,9 +23,8 @@ export function DividendsChart() {
             <circle cx="18" cy="18" fill="transparent" r="15.915" stroke="#8b5cf6" strokeDasharray="5 95" strokeDashoffset="-95" strokeWidth="3"></circle>
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-2xl font-extrabold">
-              {formatCurrency(totalAmount, user?.country).split(",")[0]}
-              {formatCurrency(totalAmount, user?.country).includes("DH") ? " DH" : "k€"}
+            <span className="text-xl font-extrabold">
+              {formatCurrency(totalAmount, user?.currency || user?.country).replace(",00", "")}
             </span>
             <span className="text-[10px] uppercase text-slate-400 font-bold">Total Juin</span>
           </div>
@@ -36,28 +35,28 @@ export function DividendsChart() {
             name="Associé A"
             amount={11250}
             share="45%"
-            country={user?.country}
+            context={user?.currency || user?.country}
           />
           <PartnerRow
             color="bg-orange-400"
             name="Associé B"
             amount={7500}
             share="30%"
-            country={user?.country}
+            context={user?.currency || user?.country}
           />
           <PartnerRow
             color="bg-emerald-500"
             name="Associé C"
             amount={5000}
             share="20%"
-            country={user?.country}
+            context={user?.currency || user?.country}
           />
           <PartnerRow
             color="bg-violet-500"
             name="Associé D"
             amount={1250}
             share="5%"
-            country={user?.country}
+            context={user?.currency || user?.country}
           />
         </div>
       </div>
@@ -70,13 +69,13 @@ function PartnerRow({
   name,
   amount,
   share,
-  country,
+  context,
 }: {
   color: string;
   name: string;
   amount: number;
   share: string;
-  country?: string;
+  context?: string;
 }) {
   return (
     <div className="flex items-center justify-between group">
@@ -85,7 +84,7 @@ function PartnerRow({
         <span className="text-sm font-semibold">{name}</span>
       </div>
       <div className="text-right">
-        <p className="text-sm font-bold">{formatCurrency(amount, country)}</p>
+        <p className="text-sm font-bold">{formatCurrency(amount, context)}</p>
         <p className="text-[10px] text-slate-500">{share} de parts</p>
       </div>
     </div>
