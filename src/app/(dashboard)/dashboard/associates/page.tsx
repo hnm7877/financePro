@@ -15,6 +15,8 @@ import { useUserStore } from "@/store/useUserStore";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
+import { COUNTRIES } from "@/data/countries";
+
 interface Associate {
   _id: string;
   name: string;
@@ -25,12 +27,17 @@ interface Associate {
   avatar: string;
   isPrimary: boolean;
   status: 'Actif' | 'Suspendu';
+  totalExpenses: number;
 }
 
 const AVAILABLE_ROLES = ['Dirigeant', 'Associé', 'Gérant', 'Investisseur', 'Conseiller'] as const;
 
 export default function AssociatesPage() {
   const { user } = useUserStore();
+  
+  // Derive user currency from country code, default to EUR
+  const userCurrency = COUNTRIES.find(c => c.code === user?.country)?.currency.code || "EUR";
+
   const router = useRouter();
   const queryClient = useQueryClient();
   const [mounted, setMounted] = useState(false);
@@ -167,8 +174,9 @@ export default function AssociatesPage() {
       return { ...prev, roles };
     });
   };
-
+  
   const totalShare = associates.reduce((acc, curr) => acc + curr.share, 0);
+  const totalExpenses = associates.reduce((acc, curr) => acc + (curr.totalExpenses || 0), 0);
 
   // Show nothing or loading during hydration/missing session
   if (!mounted || isLoading) {
@@ -189,8 +197,8 @@ export default function AssociatesPage() {
 
   return (
     <div className="flex-1 flex flex-col min-w-0 overflow-hidden" suppressHydrationWarning={true}>
-      <div className="p-8 overflow-y-auto">
-        <div className="flex justify-between items-center mb-8">
+      <div className="p-4 md:p-8 overflow-y-auto">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div>
             <h1 className="text-2xl font-bold mb-2">Gestion des Associés</h1>
             <p className="text-slate-500 text-sm">Gérez les profils, les parts sociales et le suivi en temps réel.</p>
@@ -201,7 +209,7 @@ export default function AssociatesPage() {
               setFormData({ name: "", associateEmail: "", phone: "", roles: ["Associé"], share: 0 });
               setIsModalOpen(true);
             }}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors shadow-lg shadow-blue-500/20"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors shadow-lg shadow-blue-500/20 w-full md:w-auto justify-center"
             suppressHydrationWarning={true}
           >
             <Plus size={20} />
@@ -209,7 +217,7 @@ export default function AssociatesPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
           <div className="bg-[#0f172a] p-6 rounded-2xl border border-slate-800">
             <div className="flex items-center gap-3 text-blue-500 mb-4">
               <Users size={20} />
@@ -231,7 +239,7 @@ export default function AssociatesPage() {
               <TrendingUp size={20} />
               <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Dépenses Totales</span>
             </div>
-            <div className="text-3xl font-bold">0 €</div>
+            <div className="text-3xl font-bold">{totalExpenses.toLocaleString('fr-FR', { style: 'currency', currency: userCurrency })}</div>
           </div>
 
           <div className="bg-[#0f172a] p-6 rounded-2xl border border-slate-800">
@@ -239,12 +247,13 @@ export default function AssociatesPage() {
               <Plus size={20} />
               <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Dividendes Dus</span>
             </div>
-            <div className="text-3xl font-bold">0 €</div>
+            <div className="text-3xl font-bold">{(0).toLocaleString('fr-FR', { style: 'currency', currency: userCurrency })}</div>
           </div>
         </div>
 
         <div className="bg-[#0f172a] rounded-2xl border border-slate-800 overflow-hidden">
-          <table className="w-full text-left">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left min-w-[800px]">
             <thead>
               <tr className="border-b border-slate-800">
                 <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Associé</th>
@@ -298,6 +307,10 @@ export default function AssociatesPage() {
                         ></div>
                       </div>
                       <span className="text-sm font-bold">{(associate.share * 100).toFixed(0)}%</span>
+                      <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-800 border border-slate-700 text-xs font-medium text-slate-300 w-fit">
+                        <TrendingUp size={12} className="text-blue-500" />
+                        {(associate.totalExpenses || 0).toLocaleString('fr-FR', { style: 'currency', currency: userCurrency })}
+                      </div>
                     </div>
                   </td>
                   <td className="py-4">
@@ -338,6 +351,7 @@ export default function AssociatesPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
 

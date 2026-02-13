@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import Invoice from "@/models/Invoice";
+import Associate from "@/models/Associate";
 import { Company } from "@/models/Company";
 
 export async function GET(req: Request) {
@@ -47,6 +48,18 @@ export async function POST(req: Request) {
       ...invoiceData,
       companyId: company._id,
     });
+
+    // Validated Invoice: Distribute expenses
+    if (invoiceData.status === "Ventilé") {
+      const associates = await Associate.find({ companyId: company._id, status: 'Actif' });
+      
+      for (const associate of associates) {
+        const expenseShare = invoiceData.amount * associate.share;
+        await Associate.findByIdAndUpdate(associate._id, {
+          $inc: { totalExpenses: expenseShare }
+        });
+      }
+    }
 
     return NextResponse.json(newInvoice, { status: 201 });
   } catch (error: any) {

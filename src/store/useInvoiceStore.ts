@@ -7,6 +7,7 @@ export interface Associate {
   share: number;
   avatar: string;
   isPrimary?: boolean;
+  totalExpenses?: number;
 }
 
 export interface Invoice {

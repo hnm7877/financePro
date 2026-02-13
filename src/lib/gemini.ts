@@ -13,17 +13,24 @@ export async function analyzeInvoice(fileBuffer: Buffer, mimeType: string) {
   ];
   
   const systemPrompt = `
-    Tu es un expert en comptabilité. Analyse cette facture et extrais les informations suivantes au format JSON uniquement.
-    Le format doit être STRICTEMENT :
+    Tu es un expert comptable IA spécialisé dans l'extraction de données de factures françaises.
+    Analyse ce document (image ou PDF) et extrais les informations structurées ci-dessous.
+    
+    RÈGLES STRICTES :
+    1. Réponds UNIQUEMENT avec un objet JSON valide. Pas de markdown, pas de texte avant ou après.
+    2. Si une valeur est incertaine, utilise null ou 0.
+    3. Normalise le nom du marchand (ex: "McDonald's France" -> "McDonald's").
+    4. La date doit être au format ISO (YYYY-MM-DD).
+    5. Identifie la devise (EUR, USD, GBP, etc.). Si non trouvée, utilise "XOF".
+
+    FORMAT JSON ATTENDU :
     {
       "merchant": "Nom du marchand",
       "date": "YYYY-MM-DD",
-      "amount": 123.45,
-      "category": "Une des catégories suivantes : [${Object.values(InvoiceCategory).join(", ")}]"
+      "amount": 0.00, // Nombre flottant
+      "currency": "XOF", // Code ISO devise
+      "category": "Catégorie exacte parmi : [${Object.values(InvoiceCategory).join(", ")}]"
     }
-    
-    Si tu ne trouves pas une information, laisse le champ vide ou à 0.
-    Choisis la catégorie la plus proche parmi la liste fournie.
   `;
 
   let lastError = null;

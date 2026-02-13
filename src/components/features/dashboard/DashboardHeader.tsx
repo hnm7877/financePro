@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useUserStore } from "@/store/useUserStore";
+import { useSidebarStore } from "@/store/useSidebarStore";
 
 export function DashboardHeader() {
   const { user } = useUserStore();
@@ -10,13 +11,19 @@ export function DashboardHeader() {
   }, []);
 
   return (
-    <header className="h-16 flex items-center justify-between px-8 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shrink-0">
-      <div className="flex items-center gap-4">
+    <header className="h-16 flex items-center justify-between px-4 md:px-8 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shrink-0">
+      <div className="flex items-center gap-4" suppressHydrationWarning={true}>
+        <button
+          onClick={() => useSidebarStore.getState().toggle()}
+          className="md:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+        >
+          <span className="material-symbols-outlined">menu</span>
+        </button>
         <h2 className="text-xl font-bold">
           Dashboard <span className="text-primary">{mounted ? user?.companyName : ""}</span>
         </h2>
-        <div className="h-4 w-px bg-slate-200 dark:bg-slate-700 mx-2"></div>
-        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+        <div className="hidden md:block h-4 w-px bg-slate-200 dark:bg-slate-700 mx-2"></div>
+        <div className="hidden md:flex items-center gap-2 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" suppressHydrationWarning={true}>
           <span className="material-symbols-outlined text-sm">calendar_today</span>
           <span className="text-xs font-semibold">Janvier 2024 - Juin 2024</span>
           <span className="material-symbols-outlined text-sm">expand_more</span>

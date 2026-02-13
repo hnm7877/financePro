@@ -1,8 +1,11 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { useInvoiceStore } from "@/store/useInvoiceStore";
+import { useUserStore } from "@/store/useUserStore";
 import { useToastStore } from "@/store/useToastStore";
+import { convertToEuro } from "@/lib/utils/currencyConversion";
+import { useInvoiceStore } from "@/store/useInvoiceStore";
+import { COUNTRIES } from "@/data/countries";
 
 
 export function UploadZone() {
@@ -25,13 +28,43 @@ export function UploadZone() {
 
       return response.json();
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      const { user } = useUserStore.getState();
+      // FIX: user.country stores the CODE (e.g., "CI"), not the name.
+      const userCurrency = COUNTRIES.find(c => c.code === user?.country)?.currency.code || "EUR";
+      const invoiceCurrency = data.currency || "EUR";
+
+      let finalAmount = data.amount || 0;
+      let requiresManualValidation = false;
+
+      // Currency Check
+      if (invoiceCurrency !== userCurrency) {
+        finalAmount = convertToEuro(data.amount || 0, invoiceCurrency);
+        addToast(`Devise étrangère (${invoiceCurrency}) détectée. Montant converti en ${userCurrency}.`, "info");
+        requiresManualValidation = true;
+      }
+
+      // 1. Update store with analyzed data
       setMerchant(data.merchant || "");
-      setAmount(data.amount || 0);
+      setAmount(finalAmount);
       setCategory(data.category || "Autres");
       if (data.date) setDate(data.date);
+
+      // 2. Auto-save if analysis is high confidence AND no manual validation required
+      if (!requiresManualValidation && data.merchant && finalAmount > 0) {
+        try {
+          if (user?.email) {
+            await useInvoiceStore.getState().saveInvoice(user.email);
+            addToast(`🚀 Facture ${data.merchant} créée et ventilée automatiquement !`, "success");
+            return; // Exit, no need for manual review
+          }
+        } catch (error) {
+          console.error("Auto-save failed:", error);
+        }
+      }
       
-      addToast(`IA: Facture ${data.merchant} détectée avec succès`, "success");
+      // 3. Otherwise, prompt for manual review
+      addToast(`IA: Facture analysée. Veuillez vérifier et valider.${requiresManualValidation ? " (Conversion de devise)" : ""}`, "info");
     },
     onError: (error: any) => {
       addToast(`Erreur IA: ${error.message || "Impossible d'analyser le fichier"}`, "error");

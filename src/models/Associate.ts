@@ -9,7 +9,9 @@ export interface IAssociate extends mongoose.Document {
   share: number;
   avatar: string;
   isPrimary: boolean;
+  isActive?: boolean; // Deprecated, use status
   status: 'Actif' | 'Suspendu';
+  totalExpenses: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -58,6 +60,10 @@ const AssociateSchema = new mongoose.Schema<IAssociate>(
       type: String,
       enum: ['Actif', 'Suspendu'],
       default: 'Actif',
+    },
+    totalExpenses: {
+      type: Number,
+      default: 0,
     },
   },
   {
