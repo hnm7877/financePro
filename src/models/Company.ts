@@ -59,5 +59,7 @@ const CompanySchema = new mongoose.Schema<Company>(
 );
 
 // Prevent overwrite model compilation error in Next.js hot reload
-export default mongoose.models.Company ||
+export const Company = mongoose.models.Company ||
   mongoose.model<Company>("Company", CompanySchema);
+
+export default Company;

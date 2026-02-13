@@ -36,8 +36,11 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       {
-        message: "Inscription réussie",
-        companyId: newCompany._id,
+        fullName: newCompany.fullName,
+        companyName: newCompany.companyName,
+        email: newCompany.email,
+        country: newCompany.country,
+        phoneNumber: newCompany.phoneNumber,
       },
       { status: 201 }
     );

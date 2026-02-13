@@ -4,6 +4,7 @@ import { persist } from "zustand/middleware";
 interface UserState {
   fullName: string;
   companyName: string;
+  email: string;
   country: string;
   phoneNumber: string;
 }

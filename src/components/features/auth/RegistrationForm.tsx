@@ -71,6 +71,7 @@ export function RegistrationForm() {
       setUser({
         fullName: variables.fullName,
         companyName: variables.companyName,
+        email: variables.email,
         country: variables.country,
         phoneNumber: variables.phoneNumber,
       });

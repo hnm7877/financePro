@@ -7,20 +7,25 @@ import { CashflowChart } from "@/components/features/dashboard/CashflowChart";
 import { DividendsChart } from "@/components/features/dashboard/DividendsChart";
 import { useUserStore } from "@/store/useUserStore";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
   const { user } = useUserStore();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (!user) {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (mounted && !user) {
       router.push("/login");
     }
-  }, [user, router]);
+  }, [user, router, mounted]);
 
-  if (!user) return null;
+  if (!mounted || !user) return null;
 
   return (
     <div className="space-y-8">

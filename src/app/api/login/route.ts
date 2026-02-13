@@ -24,6 +24,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       fullName: company.fullName,
       companyName: company.companyName,
+      email: company.email,
       country: company.country,
       phoneNumber: company.phoneNumber,
     });
