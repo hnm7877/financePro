@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { icon: "dashboard", label: "Tableau de Bord", href: "/dashboard" },
   { icon: "receipt_long", label: "Factures", href: "/dashboard/invoices" },
   { icon: "account_balance_wallet", label: "Dépenses", href: "/dashboard/expenses" },
+  { icon: "payments", label: "Dividendes", href: "/dashboard/dividends" },
   { icon: "group", label: "Associés", href: "/dashboard/associates" },
   { icon: "monitoring", label: "Analyses", href: "/dashboard/analytics" },
 ];

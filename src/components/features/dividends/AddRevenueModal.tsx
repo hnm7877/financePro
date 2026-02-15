@@ -1,0 +1,240 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { createRevenueSchema, CreateRevenueInput, RevenueCategory } from "@/types/revenue";
+import { ExpensePeriod } from "@/types/expense";
+import { useRevenueStore } from "@/store/useRevenueStore";
+import { useUserStore } from "@/store/useUserStore";
+import { useToastStore } from "@/store/useToastStore";
+import { cn } from "@/lib/utils";
+
+interface AddRevenueModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export function AddRevenueModal({ isOpen, onClose }: AddRevenueModalProps) {
+  const { saveRevenue } = useRevenueStore();
+  const { user } = useUserStore();
+  const { addToast } = useToastStore();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<CreateRevenueInput>({
+    resolver: zodResolver(createRevenueSchema) as any,
+    defaultValues: {
+      description: "",
+      amount: 0,
+      category: RevenueCategory.VENTES,
+      period: ExpensePeriod.MONTHLY,
+      date: new Date().toISOString().split("T")[0],
+      status: "Encaissé",
+    },
+  });
+
+  const onSubmit = async (data: CreateRevenueInput) => {
+    if (!user?.email) {
+      addToast("Utilisateur non connecté", "error");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await saveRevenue(user.email, data);
+      addToast("Revenu ajouté avec succès", "success");
+      reset();
+      onClose();
+    } catch (error) {
+      addToast("Erreur lors de l'ajout du revenu", "error");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div className="bg-slate-900 rounded-2xl border border-slate-700 shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="p-6 border-b border-slate-700 flex justify-between items-center sticky top-0 bg-slate-900 z-10">
+          <h2 className="text-xl font-bold text-white">Ajouter un Gain</h2>
+          <button
+            onClick={onClose}
+            className="p-2 rounded-lg hover:bg-slate-800 transition-colors"
+          >
+            <span className="material-symbols-outlined text-slate-400">close</span>
+          </button>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-bold mb-2 text-white">
+              Description
+            </label>
+            <input
+              {...register("description")}
+              type="text"
+              className={cn(
+                "w-full px-4 py-3 rounded-lg border bg-slate-800 text-white placeholder-slate-500 transition-colors focus:ring-2 focus:ring-emerald-500 focus:border-transparent",
+                errors.description
+                  ? "border-rose-500"
+                  : "border-slate-600"
+              )}
+              placeholder="Ex: Vente produit X, Prestation service Y"
+            />
+            {errors.description && (
+              <p className="text-rose-400 text-xs mt-1 font-medium">{errors.description.message}</p>
+            )}
+          </div>
+
+          {/* Amount */}
+          <div>
+            <label className="block text-sm font-bold mb-2 text-white">
+              Montant
+            </label>
+            <div className="relative">
+              <input
+                {...register("amount", { valueAsNumber: true })}
+                type="number"
+                step="0.01"
+                min="0"
+                className={cn(
+                  "w-full pl-12 pr-4 py-3 rounded-lg border bg-slate-800 text-white placeholder-slate-500 transition-colors focus:ring-2 focus:ring-emerald-500 focus:border-transparent",
+                  errors.amount
+                    ? "border-rose-500"
+                    : "border-slate-600"
+                )}
+                placeholder="0.00"
+              />
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-400 font-bold">
+                {user?.country === "FR" ? "€" : "FCFA"}
+              </div>
+            </div>
+            {errors.amount && (
+              <p className="text-rose-400 text-xs mt-1 font-medium">{errors.amount.message}</p>
+            )}
+          </div>
+
+          {/* Category */}
+          <div>
+            <label className="block text-sm font-bold mb-2 text-white">
+              Catégorie
+            </label>
+            <select
+              {...register("category")}
+              className={cn(
+                "w-full px-4 py-3 rounded-lg border bg-slate-800 text-white transition-colors focus:ring-2 focus:ring-emerald-500 focus:border-transparent cursor-pointer",
+                errors.category
+                  ? "border-rose-500"
+                  : "border-slate-600"
+              )}
+            >
+              {Object.values(RevenueCategory).map((category) => (
+                <option key={category} value={category} className="bg-slate-800">
+                  {category}
+                </option>
+              ))}
+            </select>
+            {errors.category && (
+              <p className="text-rose-400 text-xs mt-1 font-medium">{errors.category.message}</p>
+            )}
+          </div>
+
+          {/* Period */}
+          <div>
+            <label className="block text-sm font-bold mb-2 text-white">
+              Période
+            </label>
+            <select
+              {...register("period")}
+              className={cn(
+                "w-full px-4 py-3 rounded-lg border bg-slate-800 text-white transition-colors focus:ring-2 focus:ring-emerald-500 focus:border-transparent cursor-pointer",
+                errors.period
+                  ? "border-rose-500"
+                  : "border-slate-600"
+              )}
+            >
+              {Object.values(ExpensePeriod).map((period) => (
+                <option key={period} value={period} className="bg-slate-800">
+                  {period}
+                </option>
+              ))}
+            </select>
+            {errors.period && (
+              <p className="text-rose-400 text-xs mt-1 font-medium">{errors.period.message}</p>
+            )}
+          </div>
+
+          {/* Date */}
+          <div>
+            <label className="block text-sm font-bold mb-2 text-white">
+              Date d'encaissement
+            </label>
+            <input
+              {...register("date")}
+              type="date"
+              className={cn(
+                "w-full px-4 py-3 rounded-lg border bg-slate-800 text-white transition-colors focus:ring-2 focus:ring-emerald-500 focus:border-transparent",
+                errors.date
+                  ? "border-rose-500"
+                  : "border-slate-600"
+              )}
+            />
+            {errors.date && (
+              <p className="text-rose-400 text-xs mt-1 font-medium">{errors.date.message}</p>
+            )}
+          </div>
+
+          {/* Status */}
+          <div>
+            <label className="block text-sm font-bold mb-2 text-white">
+              Statut
+            </label>
+            <select
+              {...register("status")}
+              className="w-full px-4 py-3 rounded-lg border border-slate-600 bg-slate-800 text-white transition-colors focus:ring-2 focus:ring-emerald-500 focus:border-transparent cursor-pointer"
+            >
+              <option value="Encaissé" className="bg-slate-800">Encaissé</option>
+              <option value="En attente" className="bg-slate-800">En attente</option>
+            </select>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-6 py-3 rounded-lg border border-slate-700 hover:bg-slate-800 text-white font-bold transition-colors"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex-1 px-6 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isSubmitting ? (
+                <>
+                  <span className="material-symbols-outlined animate-spin">progress_activity</span>
+                  Enregistrement...
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined">add</span>
+                  Ajouter le gain
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
